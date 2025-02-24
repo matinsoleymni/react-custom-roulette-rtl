@@ -24,6 +24,12 @@ interface Props {
     startingOptionIndex?: number;
     pointerProps?: PointerProps;
     disableInitialAnimation?: boolean;
+    isRTL?: boolean;
+    baseImageSrc?: string;
+    width?: string;
+    height?: string;
+    baseImageClassName?: string;
+    selectedOptionBackgroundColor?: string;
 }
-export declare const Wheel: ({ mustStartSpinning, prizeNumber, data, onStopSpinning, backgroundColors, textColors, outerBorderColor, outerBorderWidth, innerRadius, innerBorderColor, innerBorderWidth, radiusLineColor, radiusLineWidth, fontFamily, fontSize, fontWeight, fontStyle, perpendicularText, textDistance, spinDuration, startingOptionIndex, pointerProps, disableInitialAnimation, }: Props) => JSX.Element | null;
+export declare const Wheel: ({ mustStartSpinning, prizeNumber, data, onStopSpinning, backgroundColors, textColors, outerBorderColor, outerBorderWidth, innerRadius, innerBorderColor, innerBorderWidth, radiusLineColor, radiusLineWidth, fontFamily, fontSize, fontWeight, fontStyle, perpendicularText, textDistance, spinDuration, startingOptionIndex, pointerProps, disableInitialAnimation, isRTL, baseImageSrc, width, height, baseImageClassName, selectedOptionBackgroundColor, }: Props) => JSX.Element | null;
 export {};

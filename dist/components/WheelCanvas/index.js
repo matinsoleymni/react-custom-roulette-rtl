@@ -11,7 +11,7 @@ var drawRadialBorder = function (ctx, centerX, centerY, insideRadius, outsideRad
 var drawWheel = function (canvasRef, data, drawWheelProps) {
     var _a, _b, _c, _d, _e;
     /* eslint-disable prefer-const */
-    var outerBorderColor = drawWheelProps.outerBorderColor, outerBorderWidth = drawWheelProps.outerBorderWidth, innerRadius = drawWheelProps.innerRadius, innerBorderColor = drawWheelProps.innerBorderColor, innerBorderWidth = drawWheelProps.innerBorderWidth, radiusLineColor = drawWheelProps.radiusLineColor, radiusLineWidth = drawWheelProps.radiusLineWidth, fontFamily = drawWheelProps.fontFamily, fontWeight = drawWheelProps.fontWeight, fontSize = drawWheelProps.fontSize, fontStyle = drawWheelProps.fontStyle, perpendicularText = drawWheelProps.perpendicularText, prizeMap = drawWheelProps.prizeMap, textDistance = drawWheelProps.textDistance;
+    var outerBorderColor = drawWheelProps.outerBorderColor, outerBorderWidth = drawWheelProps.outerBorderWidth, innerRadius = drawWheelProps.innerRadius, innerBorderColor = drawWheelProps.innerBorderColor, innerBorderWidth = drawWheelProps.innerBorderWidth, radiusLineColor = drawWheelProps.radiusLineColor, radiusLineWidth = drawWheelProps.radiusLineWidth, fontFamily = drawWheelProps.fontFamily, fontWeight = drawWheelProps.fontWeight, fontSize = drawWheelProps.fontSize, fontStyle = drawWheelProps.fontStyle, perpendicularText = drawWheelProps.perpendicularText, prizeMap = drawWheelProps.prizeMap, textDistance = drawWheelProps.textDistance, isRTL = drawWheelProps.isRTL, selectedOption = drawWheelProps.selectedOption, selectedOptionBackgroundColor = drawWheelProps.selectedOptionBackgroundColor;
     var QUANTITY = getQuantity(prizeMap);
     outerBorderWidth *= 2;
     innerBorderWidth *= 2;
@@ -35,7 +35,10 @@ var drawWheel = function (canvasRef, data, drawWheelProps) {
             var arc = (optionSize && (optionSize * (2 * Math.PI)) / QUANTITY) ||
                 (2 * Math.PI) / QUANTITY;
             var endAngle = startAngle + arc;
-            ctx.fillStyle = (style && style.backgroundColor);
+            ctx.fillStyle =
+                i === selectedOption
+                    ? selectedOptionBackgroundColor
+                    : (style && style.backgroundColor);
             ctx.beginPath();
             ctx.arc(centerX, centerY, outsideRadius, startAngle, endAngle, false);
             ctx.arc(centerX, centerY, insideRadius, endAngle, startAngle, true);
@@ -79,13 +82,27 @@ var drawWheel = function (canvasRef, data, drawWheelProps) {
                     (((_e = data[i].image) === null || _e === void 0 ? void 0 : _e.offsetY) || 0)) / 2, img.width, img.height);
             }
             else {
-                // CASE TEXT
-                contentRotationAngle += perpendicularText ? Math.PI / 2 : 0;
+                contentRotationAngle = startAngle + arc / 2;
+                if (isRTL) {
+                    contentRotationAngle += Math.PI;
+                    ctx.textAlign = 'center';
+                    ctx.direction = 'rtl';
+                }
+                else {
+                    contentRotationAngle += perpendicularText ? Math.PI / 2 : 0;
+                    ctx.textAlign = 'center';
+                    ctx.direction = 'ltr';
+                }
                 ctx.rotate(contentRotationAngle);
                 var text = data[i].option;
-                ctx.font = "".concat((style === null || style === void 0 ? void 0 : style.fontStyle) || fontStyle, " ").concat((style === null || style === void 0 ? void 0 : style.fontWeight) || fontWeight, " ").concat(((style === null || style === void 0 ? void 0 : style.fontSize) || fontSize) * 2, "px ").concat((style === null || style === void 0 ? void 0 : style.fontFamily) || fontFamily, ", Helvetica, Arial");
-                ctx.fillStyle = (style && style.textColor);
-                ctx.fillText(text || '', -ctx.measureText(text || '').width / 2, fontSize / 2.7);
+                if (data[i].option) {
+                    var fontFamilyFallback = isRTL ? 'Vazirmtn, system-ui' : fontFamily;
+                    var fontConfig = "".concat((style === null || style === void 0 ? void 0 : style.fontStyle) || fontStyle, " ").concat((style === null || style === void 0 ? void 0 : style.fontWeight) || fontWeight, " ").concat(((style === null || style === void 0 ? void 0 : style.fontSize) || fontSize) * 2, "px ").concat((style === null || style === void 0 ? void 0 : style.fontFamily) || fontFamilyFallback);
+                    ctx.font = fontConfig;
+                    ctx.fillStyle = (style && style.textColor);
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(text || '', 0, 0);
+                }
             }
             ctx.restore();
             startAngle = endAngle;
@@ -93,7 +110,7 @@ var drawWheel = function (canvasRef, data, drawWheelProps) {
     }
 };
 var WheelCanvas = function (_a) {
-    var width = _a.width, height = _a.height, data = _a.data, outerBorderColor = _a.outerBorderColor, outerBorderWidth = _a.outerBorderWidth, innerRadius = _a.innerRadius, innerBorderColor = _a.innerBorderColor, innerBorderWidth = _a.innerBorderWidth, radiusLineColor = _a.radiusLineColor, radiusLineWidth = _a.radiusLineWidth, fontFamily = _a.fontFamily, fontWeight = _a.fontWeight, fontSize = _a.fontSize, fontStyle = _a.fontStyle, perpendicularText = _a.perpendicularText, prizeMap = _a.prizeMap, rouletteUpdater = _a.rouletteUpdater, textDistance = _a.textDistance;
+    var width = _a.width, height = _a.height, data = _a.data, outerBorderColor = _a.outerBorderColor, outerBorderWidth = _a.outerBorderWidth, innerRadius = _a.innerRadius, innerBorderColor = _a.innerBorderColor, innerBorderWidth = _a.innerBorderWidth, radiusLineColor = _a.radiusLineColor, radiusLineWidth = _a.radiusLineWidth, fontFamily = _a.fontFamily, fontWeight = _a.fontWeight, fontSize = _a.fontSize, fontStyle = _a.fontStyle, perpendicularText = _a.perpendicularText, prizeMap = _a.prizeMap, rouletteUpdater = _a.rouletteUpdater, textDistance = _a.textDistance, _b = _a.isRTL, isRTL = _b === void 0 ? false : _b, selectedOption = _a.selectedOption, selectedOptionBackgroundColor = _a.selectedOptionBackgroundColor;
     var canvasRef = createRef();
     var drawWheelProps = {
         outerBorderColor: outerBorderColor,
@@ -111,6 +128,9 @@ var WheelCanvas = function (_a) {
         prizeMap: prizeMap,
         rouletteUpdater: rouletteUpdater,
         textDistance: textDistance,
+        isRTL: isRTL,
+        selectedOption: selectedOption,
+        selectedOptionBackgroundColor: selectedOptionBackgroundColor,
     };
     useEffect(function () {
         drawWheel(canvasRef, data, drawWheelProps);

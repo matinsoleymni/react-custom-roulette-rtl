@@ -8,6 +8,9 @@ interface WheelCanvasProps extends DrawWheelProps {
   width: string;
   height: string;
   data: WheelData[];
+  isRTL?: boolean;
+  selectedOption?: number;
+  selectedOptionBackgroundColor?: string;
 }
 
 interface DrawWheelProps {
@@ -26,6 +29,9 @@ interface DrawWheelProps {
   prizeMap: number[][];
   rouletteUpdater: boolean;
   textDistance: number;
+  isRTL?: boolean;
+  selectedOption?: number;
+  selectedOptionBackgroundColor?: string;
 }
 
 const drawRadialBorder = (
@@ -70,6 +76,9 @@ const drawWheel = (
     perpendicularText,
     prizeMap,
     textDistance,
+    isRTL,
+    selectedOption,
+    selectedOptionBackgroundColor,
   } = drawWheelProps;
 
   const QUANTITY = getQuantity(prizeMap);
@@ -105,7 +114,10 @@ const drawWheel = (
         (2 * Math.PI) / QUANTITY;
       const endAngle = startAngle + arc;
 
-      ctx.fillStyle = (style && style.backgroundColor) as string;
+      ctx.fillStyle =
+        i === selectedOption
+          ? (selectedOptionBackgroundColor as string)
+          : ((style && style.backgroundColor) as string);
 
       ctx.beginPath();
       ctx.arc(centerX, centerY, outsideRadius, startAngle, endAngle, false);
@@ -192,22 +204,35 @@ const drawWheel = (
           img.height
         );
       } else {
-        // CASE TEXT
-        contentRotationAngle += perpendicularText ? Math.PI / 2 : 0;
+        contentRotationAngle = startAngle + arc / 2;
+
+        if (isRTL) {
+          contentRotationAngle += Math.PI;
+          ctx.textAlign = 'center';
+          ctx.direction = 'rtl';
+        } else {
+          contentRotationAngle += perpendicularText ? Math.PI / 2 : 0;
+          ctx.textAlign = 'center';
+          ctx.direction = 'ltr';
+        }
         ctx.rotate(contentRotationAngle);
 
         const text = data[i].option;
-        ctx.font = `${style?.fontStyle || fontStyle} ${
-          style?.fontWeight || fontWeight
-        } ${(style?.fontSize || fontSize) * 2}px ${
-          style?.fontFamily || fontFamily
-        }, Helvetica, Arial`;
-        ctx.fillStyle = (style && style.textColor) as string;
-        ctx.fillText(
-          text || '',
-          -ctx.measureText(text || '').width / 2,
-          fontSize / 2.7
-        );
+
+        if (data[i].option) {
+          const fontFamilyFallback = isRTL ? 'Vazirmtn, system-ui' : fontFamily;
+          const fontConfig = `${style?.fontStyle || fontStyle} ${
+            style?.fontWeight || fontWeight
+          } ${(style?.fontSize || fontSize) * 2}px ${
+            style?.fontFamily || fontFamilyFallback
+          }`;
+
+          ctx.font = fontConfig;
+          ctx.fillStyle = (style && style.textColor) as string;
+          ctx.textBaseline = 'middle';
+
+          ctx.fillText(text || '', 0, 0);
+        }
       }
 
       ctx.restore();
@@ -236,6 +261,9 @@ const WheelCanvas = ({
   prizeMap,
   rouletteUpdater,
   textDistance,
+  isRTL = false,
+  selectedOption,
+  selectedOptionBackgroundColor,
 }: WheelCanvasProps): JSX.Element => {
   const canvasRef = createRef<HTMLCanvasElement>();
   const drawWheelProps = {
@@ -254,6 +282,9 @@ const WheelCanvas = ({
     prizeMap,
     rouletteUpdater,
     textDistance,
+    isRTL,
+    selectedOption,
+    selectedOptionBackgroundColor,
   };
 
   useEffect(() => {

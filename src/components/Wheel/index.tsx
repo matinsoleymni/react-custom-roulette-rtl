@@ -1,17 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
-import WebFont from 'webfontloader';
 
-import {
-  getQuantity,
-  getRotationDegrees,
-  isCustomFont,
-  makeClassKey,
-} from '../../utils';
+import { getQuantity, getRotationDegrees, makeClassKey } from '../../utils';
 import { roulettePointer } from '../common/images';
 import {
   RotationContainer,
   RouletteContainer,
-  RoulettePointerImage,
+  WheelContainer,
+  BaseImage,
 } from './styles';
 import {
   DEFAULT_BACKGROUND_COLORS,
@@ -59,6 +54,12 @@ interface Props {
   startingOptionIndex?: number;
   pointerProps?: PointerProps;
   disableInitialAnimation?: boolean;
+  isRTL?: boolean;
+  baseImageSrc?: string;
+  width?: string;
+  height?: string;
+  baseImageClassName?: string;
+  selectedOptionBackgroundColor?: string;
 }
 
 const STARTED_SPINNING = 'started-spinning';
@@ -91,6 +92,12 @@ export const Wheel = ({
   startingOptionIndex = -1,
   pointerProps = {},
   disableInitialAnimation = DISABLE_INITIAL_ANIMATION,
+  isRTL = false,
+  baseImageSrc,
+  width = '900',
+  height = '900',
+  baseImageClassName,
+  selectedOptionBackgroundColor = '#bf34fa',
 }: Props): JSX.Element | null => {
   const [wheelData, setWheelData] = useState<WheelData[]>([...data]);
   const [prizeMap, setPrizeMap] = useState<number[][]>([[0]]);
@@ -105,6 +112,7 @@ export const Wheel = ({
   const [totalImages, setTotalImages] = useState(0);
   const [isFontLoaded, setIsFontLoaded] = useState(false);
   const mustStopSpinning = useRef<boolean>(false);
+  const [selectedOption, setSelectedOption] = useState<number>(-1);
 
   const classKey = makeClassKey(5);
 
@@ -122,13 +130,12 @@ export const Wheel = ({
     const auxPrizeMap: number[][] = [];
     const dataLength = data?.length || 0;
     const wheelDataAux = [{ option: '', optionSize: 1 }] as WheelData[];
-    const fontsToFetch = isCustomFont(fontFamily?.trim()) ? [fontFamily] : [];
+
+    setIsFontLoaded(true);
+
+    const imagePromises: Promise<void>[] = [];
 
     for (let i = 0; i < dataLength; i++) {
-      let fontArray = data[i]?.style?.fontFamily?.split(',') || [];
-      fontArray = fontArray.map(font => font.trim()).filter(isCustomFont);
-      fontsToFetch.push(...fontArray);
-
       wheelDataAux[i] = {
         ...data[i],
         style: {
@@ -149,59 +156,52 @@ export const Wheel = ({
             DEFAULT_TEXT_COLORS[0],
         },
       };
+
       auxPrizeMap.push([]);
       for (let j = 0; j < (wheelDataAux[i].optionSize || 1); j++) {
         auxPrizeMap[i][j] = initialMapNum++;
       }
+
       if (data[i].image) {
         setTotalImages(prevCounter => prevCounter + 1);
 
-        const img = new Image();
-        img.src = data[i].image?.uri || '';
-        img.onload = () => {
-          img.height = 200 * (data[i].image?.sizeMultiplier || 1);
-          img.width = (img.naturalWidth / img.naturalHeight) * img.height;
-          wheelDataAux[i].image = {
-            uri: data[i].image?.uri || '',
-            offsetX: data[i].image?.offsetX || 0,
-            offsetY: data[i].image?.offsetY || 0,
-            landscape: data[i].image?.landscape || false,
-            sizeMultiplier: data[i].image?.sizeMultiplier || 1,
-            _imageHTML: img,
+        const imagePromise = new Promise<void>(resolve => {
+          const img = new Image();
+          img.src = data[i].image?.uri || '';
+          img.onload = () => {
+            img.height = 200 * (data[i].image?.sizeMultiplier || 1);
+            img.width = (img.naturalWidth / img.naturalHeight) * img.height;
+            wheelDataAux[i].image = {
+              uri: data[i].image?.uri || '',
+              offsetX: data[i].image?.offsetX || 0,
+              offsetY: data[i].image?.offsetY || 0,
+              landscape: data[i].image?.landscape || false,
+              sizeMultiplier: data[i].image?.sizeMultiplier || 1,
+              _imageHTML: img,
+            };
+            setLoadedImagesCounter(prevCounter => prevCounter + 1);
+            resolve();
           };
-          setLoadedImagesCounter(prevCounter => prevCounter + 1);
-          setRouletteUpdater(prevState => !prevState);
-        };
-      }
-    }
-
-    if (fontsToFetch?.length > 0) {
-      try {
-        WebFont.load({
-          google: {
-            families: Array.from(new Set(fontsToFetch.filter(font => !!font))),
-          },
-          timeout: 1000,
-          fontactive() {
-            setRouletteUpdater(!rouletteUpdater);
-          },
-          active() {
-            setIsFontLoaded(true);
-            setRouletteUpdater(!rouletteUpdater);
-          },
+          img.onerror = () => {
+            console.warn(`Failed to load image: ${data[i].image?.uri}`);
+            resolve();
+          };
         });
-      } catch (err) {
-        console.log('Error loading webfonts:', err);
+        imagePromises.push(imagePromise);
       }
-    } else {
-      setIsFontLoaded(true);
     }
 
     setWheelData([...wheelDataAux]);
     setPrizeMap(auxPrizeMap);
     setStartingOption(startingOptionIndex, auxPrizeMap);
     setIsDataUpdated(true);
-  }, [data, backgroundColors, textColors]);
+
+    if (imagePromises.length > 0) {
+      Promise.all(imagePromises).then(() => {
+        setRouletteUpdater(prev => !prev);
+      });
+    }
+  }, [data, backgroundColors, textColors, fontFamily]);
 
   useEffect(() => {
     if (mustStartSpinning && !isCurrentlySpinning) {
@@ -223,6 +223,7 @@ export const Wheel = ({
     if (hasStoppedSpinning) {
       setIsCurrentlySpinning(false);
       setStartRotationDegrees(finalRotationDegrees);
+      setSelectedOption(prizeNumber);
     }
   }, [hasStoppedSpinning]);
 
@@ -263,50 +264,65 @@ export const Wheel = ({
   }
 
   return (
-    <RouletteContainer
-      style={
-        !isFontLoaded ||
-        (totalImages > 0 && loadedImagesCounter !== totalImages)
-          ? { visibility: 'hidden' }
-          : {}
-      }
-    >
-      <RotationContainer
-        className={getRouletteClass()}
-        classKey={classKey}
-        startSpinningTime={startSpinningTime}
-        continueSpinningTime={continueSpinningTime}
-        stopSpinningTime={stopSpinningTime}
-        startRotationDegrees={startRotationDegrees}
-        finalRotationDegrees={finalRotationDegrees}
-        disableInitialAnimation={disableInitialAnimation}
-      >
-        <WheelCanvas
-          width="900"
-          height="900"
-          data={wheelData}
-          outerBorderColor={outerBorderColor}
-          outerBorderWidth={outerBorderWidth}
-          innerRadius={innerRadius}
-          innerBorderColor={innerBorderColor}
-          innerBorderWidth={innerBorderWidth}
-          radiusLineColor={radiusLineColor}
-          radiusLineWidth={radiusLineWidth}
-          fontFamily={fontFamily}
-          fontWeight={fontWeight}
-          fontStyle={fontStyle}
-          fontSize={fontSize}
-          perpendicularText={perpendicularText}
-          prizeMap={prizeMap}
-          rouletteUpdater={rouletteUpdater}
-          textDistance={textDistance}
+    <WheelContainer>
+      {baseImageSrc && (
+        <BaseImage
+          className={baseImageClassName}
+          width={width}
+          height={height}
+          src={baseImageSrc}
+          alt="wheel-base"
         />
-      </RotationContainer>
-      <RoulettePointerImage
-        style={pointerProps?.style}
-        src={pointerProps?.src || roulettePointer.src}
-        alt="roulette-static"
-      />
-    </RouletteContainer>
+      )}
+      <RouletteContainer
+        style={
+          !isFontLoaded ||
+          (totalImages > 0 && loadedImagesCounter !== totalImages)
+            ? { visibility: 'hidden' }
+            : {}
+        }
+      >
+        <RotationContainer
+          className={getRouletteClass()}
+          classKey={classKey}
+          startSpinningTime={startSpinningTime}
+          continueSpinningTime={continueSpinningTime}
+          stopSpinningTime={stopSpinningTime}
+          startRotationDegrees={startRotationDegrees}
+          finalRotationDegrees={finalRotationDegrees}
+          disableInitialAnimation={disableInitialAnimation}
+        >
+          <WheelCanvas
+            width={width}
+            height={height}
+            data={wheelData}
+            outerBorderColor={outerBorderColor}
+            outerBorderWidth={outerBorderWidth}
+            innerRadius={innerRadius}
+            innerBorderColor={innerBorderColor}
+            innerBorderWidth={innerBorderWidth}
+            radiusLineColor={radiusLineColor}
+            radiusLineWidth={radiusLineWidth}
+            fontFamily={fontFamily}
+            fontWeight={fontWeight}
+            fontStyle={fontStyle}
+            fontSize={fontSize}
+            perpendicularText={perpendicularText}
+            prizeMap={prizeMap}
+            rouletteUpdater={rouletteUpdater}
+            textDistance={textDistance}
+            isRTL={isRTL}
+            selectedOption={selectedOption}
+            selectedOptionBackgroundColor={selectedOptionBackgroundColor}
+          />
+        </RotationContainer>
+        <img
+          className="RoulettePointerImage"
+          style={pointerProps?.style}
+          src={pointerProps?.src || roulettePointer.src}
+          alt="roulette-static"
+        />
+      </RouletteContainer>
+    </WheelContainer>
   );
 };

@@ -54,7 +54,7 @@
     "url-loader": "^4.1.0",
     "webfontloader": "^1.6.28",
     "webpack": "4.44.2",
-    "webpack-cli": "^3.3.11",
+    "webpack-cli": "^6.0.1",
     "webpack-dev-server": "3.11.1"
   },
   "scripts": {

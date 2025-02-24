@@ -88,6 +88,10 @@ export default () => (
 | startingOptionIndex             | `number`           | -                         | Set which option (through its index in the `data` array) will be initially selected by the roulette (before spinning). If not specified the roulette will render without choosing a starting option                    |
 | pointerProps                    | `PointerProps`     | { src: roulettePointer }  | Image source and CSS styling to apply to the pointer image.                                                 |
 | disableInitialAnimation         | `boolean`          | false                     | When 'true', disables the initial backwards wheel animation      |
+| isRTL                           | `boolean`          | false                     | When 'true', Wheel dir change to rtl      |
+| width                           | `number`           | 900                       | Width of wheel      |
+| height                          | `number`           | 900                       | Heigh of wheel      |
+| baseImageSrc                    | `string`           | ""                        | Set baseImage of wheel      |
 
 ## Types
 

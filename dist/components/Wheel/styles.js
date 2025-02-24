@@ -40,4 +40,6 @@ export var RotationContainer = styled.div(templateObject_2 || (templateObject_2 
     return classKey;
 }, function (props) { return props.startRotationDegrees; }, function (props) { return 1440 + props.finalRotationDegrees; });
 export var RoulettePointerImage = styled(NonDraggableImage)(templateObject_3 || (templateObject_3 = __makeTemplateObject(["\n  position: absolute;\n  z-index: 5;\n  width: 17%;\n  right: 6px;\n  top: 15px;\n"], ["\n  position: absolute;\n  z-index: 5;\n  width: 17%;\n  right: 6px;\n  top: 15px;\n"])));
-var templateObject_1, templateObject_2, templateObject_3;
+export var WheelContainer = styled.div(templateObject_4 || (templateObject_4 = __makeTemplateObject(["\n  position: relative;\n  width: 100%;\n  max-width: 900px;\n  margin: 0 auto;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n"], ["\n  position: relative;\n  width: 100%;\n  max-width: 900px;\n  margin: 0 auto;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n"])));
+export var BaseImage = styled.img(templateObject_5 || (templateObject_5 = __makeTemplateObject(["\n  width: 100%;\n  max-width: 900px;\n  margin-top: -100px;\n  height: auto;\n  position: absolute;\n  bottom: 0;\n  z-index: 1;\n"], ["\n  width: 100%;\n  max-width: 900px;\n  margin-top: -100px;\n  height: auto;\n  position: absolute;\n  bottom: 0;\n  z-index: 1;\n"])));
+var templateObject_1, templateObject_2, templateObject_3, templateObject_4, templateObject_5;

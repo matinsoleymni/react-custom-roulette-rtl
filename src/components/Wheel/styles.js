@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-
 import { NonDraggableImage } from '../common/styledComponents';
 
 export const RouletteContainer = styled.div`
@@ -17,6 +16,7 @@ export const RouletteContainer = styled.div`
 export const RotationContainer = styled.div`
   position: absolute;
   width: 100%;
+  height: 100%;
   left: 0px;
   right: 0px;
   top: 0px;
@@ -77,4 +77,25 @@ export const RoulettePointerImage = styled(NonDraggableImage)`
   width: 17%;
   right: 6px;
   top: 15px;
+`;
+
+export const WheelContainer = styled.div`
+  position: relative;
+  width: 100%;
+  height: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
+export const BaseImage = styled.img`
+  width: 100%;
+  max-width: 900px;
+  margin-top: -100px;
+  height: auto;
+  position: absolute;
+  bottom: 0;
+  z-index: 1;
 `;

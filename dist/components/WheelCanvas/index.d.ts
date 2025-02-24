@@ -4,6 +4,9 @@ interface WheelCanvasProps extends DrawWheelProps {
     width: string;
     height: string;
     data: WheelData[];
+    isRTL?: boolean;
+    selectedOption?: number;
+    selectedOptionBackgroundColor?: string;
 }
 interface DrawWheelProps {
     outerBorderColor: string;
@@ -21,6 +24,9 @@ interface DrawWheelProps {
     prizeMap: number[][];
     rouletteUpdater: boolean;
     textDistance: number;
+    isRTL?: boolean;
+    selectedOption?: number;
+    selectedOptionBackgroundColor?: string;
 }
-declare const WheelCanvas: ({ width, height, data, outerBorderColor, outerBorderWidth, innerRadius, innerBorderColor, innerBorderWidth, radiusLineColor, radiusLineWidth, fontFamily, fontWeight, fontSize, fontStyle, perpendicularText, prizeMap, rouletteUpdater, textDistance, }: WheelCanvasProps) => JSX.Element;
+declare const WheelCanvas: ({ width, height, data, outerBorderColor, outerBorderWidth, innerRadius, innerBorderColor, innerBorderWidth, radiusLineColor, radiusLineWidth, fontFamily, fontWeight, fontSize, fontStyle, perpendicularText, prizeMap, rouletteUpdater, textDistance, isRTL, selectedOption, selectedOptionBackgroundColor, }: WheelCanvasProps) => JSX.Element;
 export default WheelCanvas;
