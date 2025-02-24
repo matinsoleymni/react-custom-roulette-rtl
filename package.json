@@ -1,11 +1,11 @@
 {
-  "name": "react-custom-roulette",
+  "name": "react-custom-roulette-rtl",
   "version": "1.4.1",
-  "description": "Customizable React roulette wheel with spinning animation",
+  "description": "Customizable React roulette wheel with spinning animation RTL",
   "main": "./dist/bundle.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/effectussoftware/react-custom-roulette"
+    "url": "https://github.com/matinsoleymni/react-custom-roulette-rtl"
   },
   "keywords": [
     "react",
