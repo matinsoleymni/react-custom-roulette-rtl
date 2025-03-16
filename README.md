@@ -2,9 +2,9 @@
 
 <div align="center">
 
-  [![npm version](https://img.shields.io/npm/v/react-custom-roulette)](https://www.npmjs.com/package/react-custom-roulette)
-  [![Types](https://img.shields.io/npm/types/react-custom-roulette)](https://www.typescriptlang.org/index.html)
-  [![npm downloads](https://img.shields.io/npm/dm/react-custom-roulette)](https://www.npmjs.com/package/react-custom-roulette)
+  [![npm version](https://img.shields.io/npm/v/react-custom-roulette-rtl)](https://www.npmjs.com/package/react-custom-roulette-rtl)
+  [![Types](https://img.shields.io/npm/types/react-custom-roulette-rtl)](https://www.typescriptlang.org/index.html)
+  [![npm downloads](https://img.shields.io/npm/dm/react-custom-roulette-rtl)](https://www.npmjs.com/package/react-custom-roulette-rtl)
 
 </div>
 
@@ -12,7 +12,7 @@
 
 <div align="center">
 
-  ![React Custom Roulette](https://github.com/effectussoftware/react-custom-roulette/raw/master/demo/roulette-demo.gif)
+  ![React Custom Roulette](https://github.com/matinsoleymni/react-custom-roulette-rtl/raw/master/demo/roulette-demo.gif)
 
 </div>
 
@@ -21,18 +21,19 @@
 - Customizable design
 - Prize selection with props
 - Spinning animation (customizable spin duration)
-- **[NEW!]** Images as items (see [Types](#types))
-- **[NEW!]** Customizable pointer image
+- Images as items (see [Types](#types))
+- Customizable pointer image
 - Multiple consecutive spins (see [Multi Spin](#multi-spin))
 - Compatible with TypeScript
+- RTL Support
 
 ## Install
 
-    $ npm install react-custom-roulette
+    $ npm install react-custom-roulette-rtl
 
 or
 
-    $ yarn add react-custom-roulette
+    $ yarn add react-custom-roulette-rtl
 
 ## Quickstart
 
@@ -40,7 +41,7 @@ or
 
 ```jsx
 import React from 'react'
-import { Wheel } from 'react-custom-roulette'
+import { Wheel } from 'react-custom-roulette-rtl'
 
 const data = [
   { option: '0', style: { backgroundColor: 'green', textColor: 'black' } },
@@ -175,7 +176,7 @@ interface PointerProps {
 
 ```jsx
 import React, { useState } from 'react'
-import { Wheel } from 'react-custom-roulette'
+import { Wheel } from 'react-custom-roulette-rtl-rtl'
 
 const data = [
   { option: '0' },
@@ -217,6 +218,7 @@ export default () => {
 This project exists thanks to all the people who contribute!
 
 <ul>
+    <li><a href="https://github.com/matinsoleymni">Matin Soleymani</a></li>
     <li><a href="https://github.com/luchozamora1">Luis Felipe Zamora</a></li>
     <li><a href="https://github.com/nazabalm20">Martin Nazabal</a></li>
     <li><a href="https://github.com/jpmazza">JP Mazza</a></li>
@@ -228,4 +230,4 @@ This project exists thanks to all the people who contribute!
 
 ## License
 
-This project is licensed under the MIT license, Copyright (c) 2023 <a href="https://effectussoftware.com">Effectus Software</a>. [[License](LICENSE)]
+This project is licensed under the MIT license, Copyright (c) 2025. [[License](LICENSE)]
